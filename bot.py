@@ -40,7 +40,7 @@ async def event_message(ctx):
     global team
     for member in team:
         if author.lower() == member.lower():
-            msg = f"@{author} has arrived!!! They're a fellow stream-team member! \
+            msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
                 Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
             await ctx.channel.send(msg)
             log.debug(f"TEAM MEMBER REGISTERED: {author}")

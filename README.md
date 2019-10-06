@@ -37,7 +37,7 @@ If you're still having issues, let me (Bun) know.
 ## Customizing the greeting
 You can customize the greeting on `line 43` in `bot.py`. Default, it looks like this:
 
->@{team_member} has arrived!!! They're a fellow stream-team member! Learn more about the team here: https://www.twitch.tv/team/{team_name}
+>📢 @{team_member} has arrived!!! They're a fellow stream-team member! Learn more about the team here: https://www.twitch.tv/team/{team_name}
 
 ## Events
 
