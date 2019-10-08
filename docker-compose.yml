@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  bunbot:
+    build: .
+    image: bunbot
+    container_name: bunbot
+    command: pipenv run python bot.py
+    volumes:
+      - ./.env:/usr/app/.env
