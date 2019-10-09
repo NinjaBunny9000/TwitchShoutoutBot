@@ -1,5 +1,6 @@
 import os
 import requests
+from utils.logger import loggymclogger as log
 
 class TwitchInterface:
     """Interfaces with twitch API. Use this to call for a list of team members
@@ -27,6 +28,11 @@ class TwitchInterface:
         for user in data['users']:
             members.append(user['name'])
         return members
+
+    def _set_team_members(self):
+        self.team_members = []
+        self.team_members = self._get_team_members()
+        log.debug(f"TEAM MEMBERS {self.team_members}")
 
 
 twitch_api = TwitchInterface()

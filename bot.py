@@ -1,21 +1,14 @@
 import os
-from twitchio.ext import commands
+from config import bot
+from utils.logger import loggymclogger as log
 from interface import twitch_api
 
-from logger import loggymclogger as log
-
 bot_name = os.environ['BOT_NICK']
-team = twitch_api.team_members
+# team = twitch_api.team_members
 
-# set up the bot
-bot = commands.Bot(
-    irc_token=os.environ['TMI_TOKEN'],
-    client_id=os.environ['CLIENT_ID'],
-    nick=bot_name,
-    prefix=os.environ['BOT_PREFIX'],
-    initial_channels=[os.environ['CHANNEL']] 
-)
+log.debug(f"{__name__} loaded.")
 
+import bot_cmds
 
 @bot.event
 async def event_ready():
@@ -33,18 +26,21 @@ async def event_message(ctx):
     author = ctx.author.name  # define the author of the msg
 
     # make sure the bot ignores itself and the streamer
-    if author.lower() == bot_name.lower() or author.lower() == os.environ['CHANNEL']:
+    if author.lower() == bot_name.lower():
         return
+        
+    await bot.handle_commands(ctx)
 
     # greet team members in the chat!
-    global team
-    for member in team:
-        if author.lower() == member.lower():
+    for member in twitch_api.team_members:
+        if author.lower() == member.lower() and author.lower() != os.environ['CHANNEL']:
             msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
                 Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
             await ctx.channel.send(msg)
             log.debug(f"TEAM MEMBER REGISTERED: {author}")
-            team.remove(author)  # prevent being greeted more than once
+            twitch_api.team_members.remove(author)  # prevent being greeted more than once
             # TODO: also greets them via tts
 
-bot.run()  # start the bot
+
+if __name__ == "__main__":
+    bot.run()  # start the bot
