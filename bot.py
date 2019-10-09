@@ -1,5 +1,5 @@
 import os
-from config import bot
+from config import bot, settings
 from utils.logger import loggymclogger as log
 from interface import twitch_api
 
@@ -28,18 +28,19 @@ async def event_message(ctx):
     # make sure the bot ignores itself and the streamer
     if author.lower() == bot_name.lower():
         return
-        
+
     await bot.handle_commands(ctx)
 
-    # greet team members in the chat!
-    for member in twitch_api.team_members:
-        if author.lower() == member.lower() and author.lower() != os.environ['CHANNEL']:
-            msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
-                Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
-            await ctx.channel.send(msg)
-            log.debug(f"TEAM MEMBER REGISTERED: {author}")
-            twitch_api.team_members.remove(author)  # prevent being greeted more than once
-            # TODO: also greets them via tts
+    if settings._get_sob():
+        # greet team members in the chat!
+        for member in twitch_api.team_members:
+            if author.lower() == member.lower() and author.lower() != os.environ['CHANNEL']:
+                msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
+                    Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
+                await ctx.channel.send(msg)
+                log.debug(f"TEAM MEMBER REGISTERED: {author}")
+                twitch_api.team_members.remove(author)  # prevent being greeted more than once
+                # TODO: also greets them via tts
 
 
 if __name__ == "__main__":
