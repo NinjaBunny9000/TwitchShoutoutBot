@@ -15,6 +15,7 @@ class TwitchInterface:
             'Client-ID' : os.environ['CLIENT_ID']
         }
         self.team_members = self._get_team_members()
+        self.greeted_subs = list()
 
     def request(self, method, url, params=None, limit=None, version='kraken'):
         if method is 'GET':
@@ -32,7 +33,14 @@ class TwitchInterface:
     def _set_team_members(self):
         self.team_members = []
         self.team_members = self._get_team_members()
-        log.debug(f"TEAM MEMBERS {self.team_members}")
+
+    def reset_shoutouts(self):
+        self._set_team_members()
+        self.greeted_subs = []
+
+    def mark_as_greeted(self, user):
+        self.greeted_subs.append(user)
+
 
 
 twitch_api = TwitchInterface()
