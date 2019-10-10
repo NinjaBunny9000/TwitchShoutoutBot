@@ -42,15 +42,4 @@ class TwitchInterface:
         self.greeted_subs.append(user)
 
 
-
 twitch_api = TwitchInterface()
-
-# TODO: set up a class hat handles making api calls for tts
-class TTSInterface:
-    """Interface with TTS providor (right now we're using StreamElements api calls)"""
-
-    def __init__(self):
-        pass
-
-
-tts = TTSInterface()

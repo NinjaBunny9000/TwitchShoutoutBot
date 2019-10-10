@@ -2,6 +2,7 @@ import os
 from config import bot, settings
 from utils.logger import loggymclogger as log
 from interface import twitch_api as twitch
+import audio
 
 bot_name = os.environ['BOT_NICK']
 
@@ -37,12 +38,13 @@ async def event_message(ctx):
         # greet team members!
         for member in twitch.team_members:
             if author.lower() == member.lower() and author.lower() != os.environ['CHANNEL']:
+                # cuztomise the following msg for team-member shoutouts
                 msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
                     Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
                 await ctx.channel.send(msg)
+                audio.player.speak(f"TEAM MEMBER DETECTED. If you have a sec, follow {author}. I've dropped a link in chat!")
                 log.debug(f"TEAM MEMBER REGISTERED: {author}")
                 twitch.team_members.remove(author)  # prevent being greeted more than once
-                # TODO: also greets them via tts
 
         # greet subscribers!
         if 'subscriber' in ctx.author.badges and author not in twitch.greeted_subs and author != os.environ['CHANNEL']: 

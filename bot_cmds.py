@@ -5,6 +5,7 @@ from interface import twitch_api
 
 log.debug(f"{__name__} loaded.")
 
+
 @bot.command(name='sob')
 async def sob(ctx):
     '!sob <subcommand> <variabels can look like this or whatever>'
