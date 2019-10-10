@@ -36,6 +36,16 @@ async def sob(ctx):
                     msg = f"@{ctx.author.name}, shoutouts are disabled."
                 await ctx.send(msg)
 
+            elif token[1] == 'ttstoggle':
+                if settings._get_teamtts():
+                    settings._set_teamtts(False)
+                    msg = f"@{ctx.author.name}, tts shoutouts for team members are now disabled."
+                else:
+                    settings._set_teamtts(True)
+                    msg = f"@{ctx.author.name}, tts shoutouts for team members are enabled again."
+                await ctx.send(msg)
+
+
         except IndexError:
             msg = f"@{ctx.author.name} try {os.environ['BOT_PREFIX']}sob <on, off, reset, or state>"
             await ctx.send(msg)

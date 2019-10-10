@@ -6,6 +6,7 @@ class Settings():
 
     def __init__(self):
         self.sob_state = True
+        self.tts_team = True
 
     def _set_sob(self, state):
         self.sob_state = state
@@ -13,6 +14,11 @@ class Settings():
     def _get_sob(self):
         return self.sob_state
 
+    def _set_teamtts(self, state):
+        self.tts_team = state
+
+    def _get_teamtts(self):
+        return self.tts_team
 
 settings = Settings()
 
