@@ -1,0 +1,9 @@
+.git/
+Dockerfile
+docker-compose.yml
+.dockerignore
+.gitignore
+.env
+.env*
+.vscode/
+error_log.txt

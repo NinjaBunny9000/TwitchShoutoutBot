@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  shoutoutbot:
+    build: .
+    image: shoutoutnot
+    container_name: shoutoutbot
+    command: pipenv run python bot.py
+    volumes:
+      - ./.env:/usr/app/.env
