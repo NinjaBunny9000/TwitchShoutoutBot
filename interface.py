@@ -1,5 +1,6 @@
 import os
 import requests
+from utils.logger import loggymclogger as log
 
 class TwitchInterface:
     """Interfaces with twitch API. Use this to call for a list of team members
@@ -14,6 +15,7 @@ class TwitchInterface:
             'Client-ID' : os.environ['CLIENT_ID']
         }
         self.team_members = self._get_team_members()
+        self.greeted_subs = list()
 
     def request(self, method, url, params=None, limit=None, version='kraken'):
         if method is 'GET':
@@ -28,15 +30,16 @@ class TwitchInterface:
             members.append(user['name'])
         return members
 
+    def _set_team_members(self):
+        self.team_members = []
+        self.team_members = self._get_team_members()
+
+    def reset_shoutouts(self):
+        self._set_team_members()
+        self.greeted_subs = []
+
+    def mark_as_greeted(self, user):
+        self.greeted_subs.append(user)
+
 
 twitch_api = TwitchInterface()
-
-# TODO: set up a class hat handles making api calls for tts
-class TTSInterface:
-    """Interface with TTS providor (right now we're using StreamElements api calls)"""
-
-    def __init__(self):
-        pass
-
-
-tts = TTSInterface()

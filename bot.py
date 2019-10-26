@@ -1,21 +1,14 @@
 import os
-from twitchio.ext import commands
-from interface import twitch_api
-
-from logger import loggymclogger as log
+from config import bot, settings
+from utils.logger import loggymclogger as log
+from interface import twitch_api as twitch
+import audio
 
 bot_name = os.environ['BOT_NICK']
-team = twitch_api.team_members
 
-# set up the bot
-bot = commands.Bot(
-    irc_token=os.environ['TMI_TOKEN'],
-    client_id=os.environ['CLIENT_ID'],
-    nick=bot_name,
-    prefix=os.environ['BOT_PREFIX'],
-    initial_channels=[os.environ['CHANNEL']] 
-)
+log.debug(f"{__name__} loaded.")
 
+import bot_cmds
 
 @bot.event
 async def event_ready():
@@ -33,18 +26,46 @@ async def event_message(ctx):
     author = ctx.author.name  # define the author of the msg
 
     # make sure the bot ignores itself and the streamer
-    if author.lower() == bot_name.lower() or author.lower() == os.environ['CHANNEL']:
+    if author.lower() == bot_name.lower():
         return
 
-    # greet team members in the chat!
-    global team
-    for member in team:
-        if author.lower() == member.lower():
-            msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
-                Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
-            await ctx.channel.send(msg)
-            log.debug(f"TEAM MEMBER REGISTERED: {author}")
-            team.remove(author)  # prevent being greeted more than once
-            # TODO: also greets them via tts
+    await bot.handle_commands(ctx)
 
-bot.run()  # start the bot
+    ### SHOUTOUTS AND STUFFS ###
+
+    if settings._get_sob():
+
+        # greet team members!
+        for member in twitch.team_members:
+            if author.lower() == member.lower() and author.lower() != os.environ['CHANNEL']:
+                # cuztomise the following msg for team-member shoutouts
+                msg = f"📢 @{author} has arrived!!! They're a fellow stream-team member! \
+                    Learn more about the team here: https://www.twitch.tv/team/{os.environ['TEAM']}"
+                await ctx.channel.send(msg)
+                audio.player.speak(f"TEAM MEMBER DETECTED. If you have a sec, follow {author}. I've dropped a link in chat!")
+                log.debug(f"TEAM MEMBER REGISTERED: {author}")
+                twitch.team_members.remove(author)  # prevent being greeted more than once
+
+        # greet subscribers!
+        if 'subscriber' in ctx.author.badges and author not in twitch.greeted_subs and author != os.environ['CHANNEL']: 
+            months_subbed = int(ctx.author.tags['badge-info'].split('/')[1])
+
+            # customize the following lines for custom greetings (based on subs)
+            greetings = [
+                (24, f"📣 @{author} has arrived! They've been supporting for [{months_subbed}] flippin months! "),
+                (12,f"📣 @{author} is BACK! Thanks for the continued support of [{months_subbed}] months!"),
+                (9, f"📣 @{author} had landed! Congrats on the sub babby 👶 and the support of [{months_subbed}] months!"),
+                (6, f"📣 @{author} has arrived! Thanks for the [{months_subbed}] months support!"),
+                (3, f"📣 @{author} is here! Welcome back! ([{months_subbed}] months of support)"),
+            ]
+
+            for month, message in greetings:
+                if months_subbed >= month:
+                    await ctx.channel.send(message)
+                    break
+            
+            twitch.mark_as_greeted(author)
+
+
+if __name__ == "__main__":
+    bot.run()  # start the bot
